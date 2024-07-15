@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "outDir": "./bin",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "lib": [
+      "es2021"
+    ]
+  }
+}
