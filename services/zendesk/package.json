@@ -1,23 +1,25 @@
 {
-  "name": "inferable-zendesk-service",
+  "name": "@inferable/zendesk",
   "version": "0.0.1",
   "description": "Zendesk proxy for inferable.ai",
   "main": "bin/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand --watch src --setupFiles dotenv/config --forceExit --onlyChanged",
     "build": "tsc"
   },
   "author": "Inferable.ai",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.2",
-    "dotenv": "^16.4.5",
-    "inferable": "^0.2.1",
+    "inferable": "^0.5.0",
+    "jest": "^29.7.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
-    "@types/node-zendesk": "^2.0.15",
+    "dotenv": "^16.4.5",
+    "@types/jest": "^29.5.12",
+    "@babel/preset-env": "^7.24.8",
+    "@babel/preset-typescript": "^7.24.7",
+    "@types/node": "^20.14.10",
     "typescript": "^5.4.5"
   }
 }
