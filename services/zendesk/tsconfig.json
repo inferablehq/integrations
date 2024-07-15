@@ -5,6 +5,9 @@
     "outDir": "./bin",
     "rootDir": "./src",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": [
+      "es2021"
+    ]
   }
 }

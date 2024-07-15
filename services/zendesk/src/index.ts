@@ -3,7 +3,7 @@ import path from "path";
 import { z } from "zod";
 
 const integrationType = "zendesk";
-const zendeskTicketCreatedType = "zendesk.ticket.created";
+const TicketCreatedType = "zendesk.ticket.created";
 const pkg = require(path.join(__dirname, "..", "package.json"));
 
 export const configSchema = z.object({
@@ -23,7 +23,14 @@ export const configSchema = z.object({
 
 const config = configSchema.parse(process.env);
 
-const zendeskTicketSchema = z.object({
+const zendeskError = z.object({
+  error: z.object({
+    title: z.string(),
+    message: z.string(),
+  }),
+});
+
+const TicketSchema = z.object({
   id: z.number().int(),
   subject: z.string(),
   description: z.string().nullable(),
@@ -36,13 +43,21 @@ const zendeskTicketSchema = z.object({
   updated_at: z.string().datetime().nullable(), // ISO 8601 format
 });
 
-const zendeskTicketCommentSchema = z.array(
+const TicketCommentSchema = z.array(
   z.object({
     plain_body: z.string(),
     created_at: z.string().datetime(),
     author_id: z.number().int(),
   })
 );
+
+const SearchResultsSchema = z.object({
+  count: z.number().int(),
+  facets: z.any(),
+  next_page: z.any(),
+  previous_page: z.any(),
+  results: z.array(TicketSchema),
+});
 
 const defaultHeaders = {
   "Content-Type": "application/json",
@@ -54,19 +69,19 @@ const defaultHeaders = {
 
 const baseUrl = `https://${config.ZENDESK_SUBDOMAIN}.zendesk.com/api/v2`;
 
-export const getZendeskTicket = async ({ ticketId }: { ticketId: string }) => {
+export const getTicket = async ({ ticketId }: { ticketId: string }) => {
   const response = await fetch(`${baseUrl}/tickets/${ticketId}`, {
     headers: defaultHeaders,
     method: "GET",
   });
 
   if (response.status !== 200) {
-    throw new Error(`Failed to get ticket: ${response.statusText}`);
+    throw new Error(`Failed to get ticket: ${response.status}`);
   }
 
-  const data = await response.json();
+  const data: any = await response.json();
 
-  const ticket = zendeskTicketSchema.parse(data.ticket);
+  const ticket = TicketSchema.parse(data.ticket);
 
   return ticket;
 };
@@ -84,7 +99,7 @@ export const canAccessZendesk = async () => {
   };
 };
 
-export const getAllZendeskTicketComments = async ({
+export const getAllTicketComments = async ({
   ticketId,
 }: {
   ticketId: string;
@@ -95,12 +110,12 @@ export const getAllZendeskTicketComments = async ({
   });
 
   if (response.status !== 200) {
-    throw new Error(`Failed to get ticket comments: ${response.statusText}`);
+    throw new Error(`Failed to get ticket comments: ${response.status}`);
   }
 
-  const data = await response.json();
+  const data: any = await response.json();
 
-  const comments = zendeskTicketCommentSchema.parse(data.comments);
+  const comments = TicketCommentSchema.parse(data.comments);
 
   return comments.map((c) => ({
     plain_body: c.plain_body,
@@ -109,7 +124,7 @@ export const getAllZendeskTicketComments = async ({
   }));
 };
 
-export const addInternalNoteToZendeskTicket = async ({
+export const addInternalNoteToTicket = async ({
   ticketId,
   note,
 }: {
@@ -131,7 +146,7 @@ export const addInternalNoteToZendeskTicket = async ({
 
   if (response.status !== 200) {
     throw new Error(
-      `Failed to add internal note to ticket: ${response.statusText}`
+      `Failed to add internal note to ticket: ${response.status}`
     );
   }
 
@@ -140,11 +155,7 @@ export const addInternalNoteToZendeskTicket = async ({
   return data;
 };
 
-export const searchArticlesInHelpCenter = async ({
-  query,
-}: {
-  query: string;
-}) => {
+export const searchHelpCenter = async ({ query }: { query: string }) => {
   const response = await fetch(
     `${baseUrl}/guide/search?query=${encodeURIComponent(query)}`,
     {
@@ -154,7 +165,7 @@ export const searchArticlesInHelpCenter = async ({
   );
 
   if (response.status !== 200) {
-    throw new Error(`Failed to search articles: ${response.statusText}`);
+    throw new Error(`Failed to search articles: ${response.status}`);
   }
 
   const data = await response.json();
@@ -162,28 +173,33 @@ export const searchArticlesInHelpCenter = async ({
   return data;
 };
 
-export const searchPreviouslyResolvedZendeskTickets = async ({
-  query,
-}: {
-  query: string;
-}) => {
-  const searchQuery = `type:ticket status:closed sort_order:desc ${query} sort_by:updated_at`;
+export const searchResolvedTickets = async ({ query }: { query: string }) => {
+  const searchQuery = `query=${encodeURIComponent(
+    query
+  )} type:ticket status:solved&sort_by:updated_at&sort_order:desc`;
 
-  const response = await fetch(
-    `${baseUrl}/tickets/search?query=${encodeURIComponent(searchQuery)}`,
-    {
-      headers: defaultHeaders,
-      method: "GET",
-    }
-  );
+  console.log(searchQuery);
+
+  const response = await fetch(`${baseUrl}/search.json?${searchQuery}`, {
+    headers: defaultHeaders,
+    method: "GET",
+  });
 
   if (response.status !== 200) {
-    throw new Error(`Failed to search tickets: ${response.statusText}`);
+    const body = await response.json();
+
+    const error = zendeskError.safeParse(body);
+
+    if (error.success) {
+      throw new Error(`${error.data.error.title}: ${error.data.error.message}`);
+    } else {
+      throw new Error(`Failed to search tickets: ${response.status}`);
+    }
   }
 
   const data = await response.json();
 
-  return data;
+  return SearchResultsSchema.parse(data);
 };
 
 export const getHelpCenterSections = async () => {
@@ -193,9 +209,7 @@ export const getHelpCenterSections = async () => {
   });
 
   if (response.status !== 200) {
-    throw new Error(
-      `Failed to get help center sections: ${response.statusText}`
-    );
+    throw new Error(`Failed to get help center sections: ${response.status}`);
   }
 
   const data = await response.json();
@@ -233,7 +247,7 @@ export const createDraftHelpCenterArticle = async ({
   );
 
   if (response.status !== 201) {
-    throw new Error(`Failed to create article: ${response.statusText}`);
+    throw new Error(`Failed to create article: ${response.status}`);
   }
 
   const data = await response.json();
@@ -249,7 +263,7 @@ const getHelpCenterPermissionGroups = async () => {
 
   if (response.status !== 200) {
     throw new Error(
-      `Failed to get help center permission groups: ${response.statusText}`
+      `Failed to get help center permission groups: ${response.status}`
     );
   }
 
@@ -260,8 +274,8 @@ const getHelpCenterPermissionGroups = async () => {
 
 export const functions = [
   {
-    name: "addInternalNoteToZendeskTicket",
-    func: addInternalNoteToZendeskTicket,
+    name: "addInternalNoteToTicket",
+    func: addInternalNoteToTicket,
     description: "Add an internal note to a Zendesk ticket",
     schema: z.object({
       ticketId: z.number().describe("The ID of the ticket"),
@@ -269,32 +283,32 @@ export const functions = [
     }),
   },
   {
-    name: "getZendeskTicket",
-    func: getZendeskTicket,
+    name: "getTicket",
+    func: getTicket,
     description: "Get a Zendesk ticket",
     schema: z.object({
       ticketId: z.number().describe("The ID of the ticket"),
     }),
   },
   {
-    name: "searchArticlesInHelpCenter",
-    func: searchArticlesInHelpCenter,
+    name: "searchHelpCenter",
+    func: searchHelpCenter,
     description: "Search articles in the Zendesk help center",
     schema: z.object({
       query: z.string().describe("The search query"),
     }),
   },
   {
-    name: "searchPreviouslyResolvedZendeskTickets",
-    func: searchPreviouslyResolvedZendeskTickets,
+    name: "searchResolvedTickets",
+    func: searchResolvedTickets,
     description: "Search previously resolved Zendesk tickets",
     schema: z.object({
       query: z.string().describe("The search query"),
     }),
   },
   {
-    name: "getAllZendeskTicketComments",
-    func: getAllZendeskTicketComments,
+    name: "getAllTicketComments",
+    func: getAllTicketComments,
     description: "Get all comments for a Zendesk ticket",
     schema: z.object({
       ticketId: z.number().describe("The ID of the ticket"),
@@ -330,7 +344,7 @@ export const functions = [
 
 export const webhooks = [
   {
-    type: zendeskTicketCreatedType,
+    type: TicketCreatedType,
     handler: async () => {
       throw new Error("Not implemented");
     },
@@ -352,8 +366,10 @@ export const setup = async () => {
 export const teardown = async () => {};
 
 export const initialize = (inferable: Inferable) => {
+  console.log(`${pkg.name}@${pkg.version}`);
+
   const service = inferable.service({
-    name: `${pkg.name}@${pkg.version}`,
+    name: pkg.name.replace("@inferable/", ""),
   });
 
   for (const { name, func, description, schema } of functions) {
