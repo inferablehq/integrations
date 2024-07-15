@@ -1,5 +1,5 @@
 {
-  "name": "inferable-zendesk-service",
+  "name": "@inferable/zendesk",
   "version": "0.0.1",
   "description": "Zendesk proxy for inferable.ai",
   "main": "bin/index.js",
@@ -10,14 +10,12 @@
   "author": "Inferable.ai",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.2",
     "dotenv": "^16.4.5",
-    "inferable": "^0.2.1",
+    "inferable": "^0.5.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
-    "@types/node-zendesk": "^2.0.15",
+    "@types/node": "^20.14.10",
     "typescript": "^5.4.5"
   }
 }
