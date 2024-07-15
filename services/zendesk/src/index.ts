@@ -2,7 +2,6 @@ import { Inferable } from "inferable";
 import path from "path";
 import { z } from "zod";
 
-const integrationType = "zendesk";
 const TicketCreatedType = "zendesk.ticket.created";
 const pkg = require(path.join(__dirname, "..", "package.json"));
 
