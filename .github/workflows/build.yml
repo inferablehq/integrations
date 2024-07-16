@@ -26,8 +26,8 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
 
-      - name: Install dependencies on root
-        run: npm ci
+      - name: Install dependencies
+        run: npx lerna exec npm ci
 
       - name: Run tests
         run: npx lerna run test
