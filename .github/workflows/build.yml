@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  create-release:
+  build-and-release:
     runs-on: ubuntu-latest
 
     permissions:
@@ -33,19 +33,10 @@ jobs:
         run: npx lerna run test
         env:
           INFERABLE_TEST_ENDPOINT: 'https://api.inferable.ai'
-          INFERABLE_TEST_CLUSTER: ${{ vars.INFERABLE_TEST_CLUSTER }}
-          INFERABLE_TEST_SECRET: ${{ secrets.INFERABLE_TEST_SECRET }}
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-          DATABASE_SSL_DISABLED: '1'
-          JWKS_URL: ${{ secrets.JWKS_URL }}
-          PREDICTOR_API_URL: ${{ secrets.PREDICTOR_API_URL }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          AWS_ACCESS_KEY_ID: 'PLACEHOLDER'
-          AWS_SECRET_ACCESS_KEY: 'PLACEHOLDER'
-          AWS_DEFAULT_REGION: 'ap-southeast-2'
-          MACHINE_ROLE_ARN: 'PLACEHOLDER'
-          SELF_SIGN_JWT_SECRET: ${{ secrets.SELF_SIGN_JWT_SECRET }}
+          ZENDESK_ADMIN_EMAIL: ${{ secrets.ZENDESK_ADMIN_EMAIL }}
+          ZENDESK_API_TOKEN: ${{ secrets.ZENDESK_API_TOKEN }}
+          ZENDESK_SUBDOMAIN: ${{ secrets.ZENDESK_SUBDOMAIN }}
+          INFERABLE_API_SECRET: ${{ secrets.INFERABLE_API_SECRET }}
 
       - name: Build packages
         run: npx lerna run build
