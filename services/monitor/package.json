@@ -4,7 +4,8 @@
   "description": "A monitor for the proxy service",
   "main": "bin/index.js",
   "scripts": {
-    "test": "jest --runInBand --watch src --setupFiles dotenv/config --forceExit --onlyChanged",
+    "test:dev": "jest --runInBand --watch src --setupFiles dotenv/config --forceExit --onlyChanged",
+    "test": "jest --runInBand --setupFiles dotenv/config --forceExit",
     "build": "tsc"
   },
   "author": "Inferable.ai",

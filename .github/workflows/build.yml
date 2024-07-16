@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+
+      - name: Install dependencies on root
+        run: npm ci
+
+      - name: Run tests
+        run: npx lerna run test
+        env:
+          INFERABLE_TEST_ENDPOINT: 'https://api.inferable.ai'
+          INFERABLE_TEST_CLUSTER: ${{ vars.INFERABLE_TEST_CLUSTER }}
+          INFERABLE_TEST_SECRET: ${{ secrets.INFERABLE_TEST_SECRET }}
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_SSL_DISABLED: '1'
+          JWKS_URL: ${{ secrets.JWKS_URL }}
+          PREDICTOR_API_URL: ${{ secrets.PREDICTOR_API_URL }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AWS_ACCESS_KEY_ID: 'PLACEHOLDER'
+          AWS_SECRET_ACCESS_KEY: 'PLACEHOLDER'
+          AWS_DEFAULT_REGION: 'ap-southeast-2'
+          MACHINE_ROLE_ARN: 'PLACEHOLDER'
+          SELF_SIGN_JWT_SECRET: ${{ secrets.SELF_SIGN_JWT_SECRET }}
+
+      - name: Build packages
+        run: npx lerna run build
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name "Inferable CI"
+          git config --global user.email "ci@inferable.ai"
+
+      - name: Version packages
+        if: github.ref == 'refs/heads/main'
+        run: npx lerna version --conventional-commits --yes --no-private --create-release github
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish packages
+        if: github.ref == 'refs/heads/main'
+        run: npx lerna publish from-package --yes --no-private --registry https://registry.npmjs.org
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
