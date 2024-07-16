@@ -1,6 +1,6 @@
 {
   "name": "@inferable/zendesk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Zendesk proxy for inferable.ai",
   "main": "bin/index.js",
   "scripts": {
