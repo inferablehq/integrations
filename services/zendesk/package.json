@@ -1,6 +1,6 @@
 {
   "name": "@inferable/zendesk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Zendesk proxy for inferable.ai",
   "main": "bin/index.js",
   "scripts": {
@@ -16,11 +16,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "dotenv": "^16.4.5",
-    "@types/jest": "^29.5.12",
     "@babel/preset-env": "^7.24.8",
     "@babel/preset-typescript": "^7.24.7",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.14.10",
+    "dotenv": "^16.4.5",
     "typescript": "^5.4.5"
   }
 }
