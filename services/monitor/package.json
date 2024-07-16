@@ -22,5 +22,6 @@
     "@types/node": "^20.14.10",
     "dotenv": "^16.4.5",
     "typescript": "^5.4.5"
-  }
+  },
+  "private": false
 }
