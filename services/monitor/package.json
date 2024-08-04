@@ -1,6 +1,6 @@
 {
   "name": "@inferable/monitor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A monitor for the proxy service",
   "main": "bin/index.js",
   "scripts": {

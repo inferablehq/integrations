@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.1 (2024-08-04)
+
+
+### Bug Fixes
+
+* Include oas.yaml in built package ([#6](https://github.com/inferablehq/integrations/issues/6)) ([845b999](https://github.com/inferablehq/integrations/commit/845b999f31ae886027f6c2faf4c830796347aabc))
+
+
+
+
+
 # 0.1.0 (2024-08-04)
 
 
