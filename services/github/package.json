@@ -1,6 +1,6 @@
 {
   "name": "@inferable/github",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "GitHub proxy for inferable.ai",
   "main": "bin/index.js",
   "scripts": {
