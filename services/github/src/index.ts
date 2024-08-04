@@ -13,7 +13,7 @@ export const configSchema = z.object({
 const pkg = require(path.join(__dirname, "..", "package.json"));
 
 export const initialize = (inferable: Inferable, env = process.env) => {
-  const config = configSchema.parse(process.env);
+  const config = configSchema.parse(env);
 
   const service = inferable.service({
     name: pkg.name.replace("@inferable/", ""),
