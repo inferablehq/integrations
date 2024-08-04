@@ -1,0 +1,29 @@
+{
+  "name": "@inferable/github",
+  "version": "0.0.1",
+  "description": "GitHub proxy for inferable.ai",
+  "main": "bin/index.js",
+  "scripts": {
+    "test:dev": "jest --runInBand --watch src --setupFiles dotenv/config --forceExit --onlyChanged",
+    "test": "jest --runInBand --setupFiles dotenv/config --forceExit",
+    "build": "tsc && cp ./src/schema.graphql ./bin"
+  },
+  "author": "Inferable.ai",
+  "license": "MIT",
+  "dependencies": {
+    "graphql-tag": "^2.12.6",
+    "inferable": "^0.9.1",
+    "zed": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.10",
+    "dotenv": "^16.4.5",
+    "jest": "^29.7.0",
+    "typescript": "^5.4.5"
+  },
+  "private": false,
+  "files": [
+    "bin"
+  ]
+}
