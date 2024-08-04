@@ -2,7 +2,6 @@ import { Inferable, fromOpenAPI } from "inferable";
 import path from "path";
 import { z } from "zod";
 
-const TicketCreatedType = "zendesk.ticket.created";
 const pkg = require(path.join(__dirname, "..", "package.json"));
 
 export const configSchema = z.object({
@@ -20,16 +19,23 @@ export const configSchema = z.object({
     .regex(/^[a-z0-9]+$/),
 });
 
-export const initialize = async (
-  inferable: Inferable,
-  env = configSchema.parse(process.env)
-) => {
+function environment() {
+  const r = configSchema.safeParse(process.env);
+
+  if (r.success) {
+    return r.data;
+  } else {
+    throw new Error(r.error.errors.map((e) => e.message).join("\n"));
+  }
+}
+
+export const initialize = async (inferable: Inferable, env = environment()) => {
   const authHeader = `Basic ${Buffer.from(
     `${env.ZENDESK_ADMIN_EMAIL}/token:${env.ZENDESK_API_TOKEN}`
   ).toString("base64")}`;
 
   const functions = await fromOpenAPI({
-    schema: path.join(__dirname, "oas.yaml"),
+    schema: path.join(__dirname, "..", "oas.yaml"),
     baseUrl: `https://${env.ZENDESK_SUBDOMAIN}.zendesk.com`,
     axiosDefaultConfig: {
       headers: {
