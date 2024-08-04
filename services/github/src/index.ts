@@ -2,7 +2,7 @@ import { Inferable, fromGraphQL } from "inferable";
 import { z } from "zod";
 import path from "path";
 
-import { openPullRequests } from "./operations";
+import { operations } from "./operations";
 
 export const configSchema = z.object({
   GITHUB_TOKEN: z
@@ -19,18 +19,15 @@ export const initialize = (inferable: Inferable, env = process.env) => {
     name: pkg.name.replace("@inferable/", ""),
     functions: fromGraphQL({
       schema: path.resolve(__dirname, "./schema.graphql"),
-      operations: [
-        openPullRequests
-      ],
+      operations,
       baseUrl: "https://api.github.com",
       axiosDefaultConfig: {
         headers: {
           Authorization: `bearer ${config.GITHUB_TOKEN}`,
         }
-      }
+      },
     }),
   });
-
 
   return service;
 };
@@ -40,6 +37,4 @@ export default {
   name: pkg.name,
   version: pkg.version,
   initialize,
-  setup: async () => {},
-  teardown: async () => {},
 };

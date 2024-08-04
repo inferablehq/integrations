@@ -4,8 +4,6 @@
   "description": "GitHub proxy for inferable.ai",
   "main": "bin/index.js",
   "scripts": {
-    "test:dev": "jest --runInBand --watch src --setupFiles dotenv/config --forceExit --onlyChanged",
-    "test": "jest --runInBand --setupFiles dotenv/config --forceExit",
     "build": "tsc && cp ./src/schema.graphql ./bin"
   },
   "author": "Inferable.ai",
@@ -13,7 +11,7 @@
   "dependencies": {
     "graphql-tag": "^2.12.6",
     "inferable": "^0.9.1",
-    "zed": "^0.1.0"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
