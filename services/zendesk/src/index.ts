@@ -41,7 +41,7 @@ export const initialize = async (
   });
 
   const service = inferable.service({
-    name: "zendesk-api",
+    name: "zendesk",
     functions: functions,
   });
 
