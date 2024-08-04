@@ -6,8 +6,7 @@ import test from "node:test";
 import assert from "node:assert";
 
 const inferable = new Inferable({
-  apiSecret:
-    "sk_a510800ed2d431342e896c3aefb810f0b8057deddef889e1b59d5b3eddbbec2b",
+  apiSecret: process.env.INFERABLE_API_SECRET,
 });
 
 test("zendesk", async (t) => {
