@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.1.0 (2024-08-04)
+
+
+### Features
+
+* Zendesk integration via OpeanAPI connector ([#5](https://github.com/inferablehq/integrations/issues/5)) ([2f7e0d3](https://github.com/inferablehq/integrations/commit/2f7e0d3049e7aae905f520d76f71f9de1632909a))
+
+
+
+
+
 ## 0.0.6 (2024-07-16)
 
 **Note:** Version bump only for package @inferable/monitor
