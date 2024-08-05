@@ -6,7 +6,8 @@
   "scripts": {
     "test:dev": "jest --runInBand --watch src --setupFiles dotenv/config --forceExit --onlyChanged",
     "test": "jest --runInBand --setupFiles dotenv/config --forceExit",
-    "build": "tsc"
+    "build": "tsc",
+    "dev": "DEBUG=* tsx -r dotenv/config src/dev.ts"
   },
   "author": "Inferable.ai",
   "license": "MIT",

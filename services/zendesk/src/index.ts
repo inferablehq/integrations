@@ -1,6 +1,7 @@
 import { Inferable, fromOpenAPI } from "inferable";
 import path from "path";
 import { z } from "zod";
+import { transform } from "./transformer";
 
 const pkg = require(path.join(__dirname, "..", "package.json"));
 
@@ -48,7 +49,7 @@ export const initialize = async (inferable: Inferable, env = environment()) => {
 
   const service = inferable.service({
     name: "zendesk",
-    functions: functions,
+    functions: transform(functions),
   });
 
   return service;

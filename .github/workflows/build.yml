@@ -27,7 +27,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npx lerna exec npm ci
+        run: npm ci && npx lerna exec npm ci
 
       - name: Run tests
         run: npx lerna run test
